@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Jam — Receiver Prototype (Мама)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #fff;
+        }
+        
+        .prototype-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .prototype-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #a78bfa;
+            margin-bottom: 16px;
+        }
+        
+        .prototype-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .prototype-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        
+        /* Phone Frame */
+        .phone-container {
+            position: relative;
+        }
+        
+        .phone {
+            width: 375px;
+            height: 812px;
+            background: #1c1c1e;
+            border-radius: 54px;
+            padding: 14px;
+            box-shadow: 
+                0 50px 100px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 0 0 1px rgba(255,255,255,0.05);
+            position: relative;
+        }
+        
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -3px;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 100px;
+            background: #2c2c2e;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .phone-inner {
+            background: #000;
+            border-radius: 44px;
+            overflow: hidden;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Screens */
+        .screens {
+            height: 100%;
+            position: relative;
+        }
+        
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #121212;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(20px);
+        }
+        
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+        
+        /* Dynamic Island */
+        .dynamic-island {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 126px;
+            height: 37px;
+            background: #000;
+            border-radius: 24px;
+            z-index: 100;
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            height: 54px;
+            padding: 12px 28px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        
+        /* Content */
+        .screen-content {
+            padding: 8px 24px 24px;
+            height: calc(100% - 54px);
+            overflow-y: auto;
+        }
+        
+        /* Invitation Screen */
+        .invitation-screen {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f172a 100%) !important;
+        }
+        
+        .invitation-header {
+            text-align: center;
+            padding-top: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .from-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(29, 185, 84, 0.15);
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .from-badge .avatar {
+            width: 28px;
+            height: 28px;
+            background: #1DB954;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .from-badge span {
+            color: #a3a3a3;
+        }
+        
+        .from-badge strong {
+            color: #1DB954;
+        }
+        
+        .invitation-title {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .invitation-subtitle {
+            font-size: 16px;
+            color: #a3a3a3;
+        }
+        
+        /* Live Badge */
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ef4444;
+            margin-bottom: 20px;
+        }
+        
+        .live-badge::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Track Card */
+        .invitation-track {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 28px;
+            margin: 0 auto 24px;
+            text-align: center;
+            max-width: 300px;
+        }
+        
+        .track-cover {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #e879f9, #8b5cf6);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            margin: 0 auto 20px;
+        }
+        
+        .track-cover.large {
+            width: 240px;
+            height: 240px;
+            font-size: 80px;
+            margin: 0 auto 24px;
+        }
+        
+        .invitation-track h4 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .invitation-track .artist {
+            font-size: 16px;
+            color: #a3a3a3;
+        }
+        
+        /* Choice Buttons */
+        .choice-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 0 10px;
+        }
+        
+        .choice-btn {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            border-radius: 20px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+            text-align: left;
+        }
+        
+        .choice-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .choice-btn.primary {
+            background: #1DB954;
+            color: #000;
+        }
+        
+        .choice-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+        }
+        
+        .choice-btn .icon {
+            font-size: 26px;
+        }
+        
+        .choice-btn .text {
+            flex: 1;
+        }
+        
+        .choice-btn .text span {
+            display: block;
+            font-size: 13px;
+            font-weight: 400;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+        
+        /* Preview Listening Screen */
+        .preview-screen {
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f172a 100%) !important;
+        }
+        
+        .preview-header {
+            text-align: center;
+            padding-top: 20px;
+        }
+        
+        .preview-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(249, 115, 22, 0.2);
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #f97316;
+            margin-bottom: 24px;
+        }
+        
+        .preview-timer {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ef4444;
+            margin-top: 16px;
+        }
+        
+        /* Together Badge */
+        .together-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.2), rgba(29, 185, 84, 0.1));
+            border: 1px solid #1DB954;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1DB954;
+            margin-bottom: 24px;
+        }
+        
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #1DB954;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Avatars */
+        .together-avatars {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        
+        .avatar-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            border: 4px solid #121212;
+        }
+        
+        .avatar-circle:nth-child(2) {
+            margin-left: -20px;
+        }
+        
+        .avatar-circle.green { background: #1DB954; color: #000; }
+        .avatar-circle.purple { background: #8b5cf6; color: #fff; }
+        
+        /* Together Info */
+        .together-info {
+            background: rgba(29, 185, 84, 0.15);
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            border-radius: 20px;
+            padding: 16px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .together-info .avatars {
+            display: flex;
+        }
+        
+        .together-info .avatar-circle {
+            width: 44px;
+            height: 44px;
+            font-size: 16px;
+            border-width: 3px;
+        }
+        
+        .together-info .avatar-circle:nth-child(2) {
+            margin-left: -14px;
+        }
+        
+        .together-info .text {
+            text-align: left;
+        }
+        
+        .together-info .text p:first-child {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1DB954;
+        }
+        
+        .together-info .text p:last-child {
+            font-size: 12px;
+            color: #a3a3a3;
+        }
+        
+        /* Player Section */
+        .player-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, transparent, rgba(0,0,0,0.95));
+            padding: 80px 28px 40px;
+        }
+        
+        .progress-track {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #1DB954;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .progress-fill.warning {
+            background: #f97316;
+        }
+        
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #a3a3a3;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .control-btn {
+            font-size: 24px;
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        
+        .play-pause {
+            width: 72px;
+            height: 72px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #000;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .play-pause:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Sign In Prompt Screen */
+        .signin-prompt-screen {
+            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%) !important;
+        }
+        
+        .signin-prompt-content {
+            text-align: center;
+            padding-top: 40px;
+        }
+        
+        .signin-emoji {
+            font-size: 80px;
+            margin-bottom: 24px;
+        }
+        
+        .signin-prompt-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .signin-prompt-text {
+            font-size: 16px;
+            color: #a3a3a3;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        
+        .benefit-list {
+            text-align: left;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .benefit-item:last-child {
+            border-bottom: none;
+        }
+        
+        .benefit-icon {
+            font-size: 24px;
+        }
+        
+        .benefit-text {
+            font-size: 15px;
+        }
+        
+        /* Sign In Screen */
+        .signin-screen {
+            background: linear-gradient(180deg, #121212 0%, #1a1a1a 100%) !important;
+        }
+        
+        .signin-content {
+            padding-top: 20px;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+        
+        .progress-step {
+            flex: 1;
+            height: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        
+        .progress-step.active,
+        .progress-step.done {
+            background: #1DB954;
+        }
+        
+        .signin-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .signin-logo {
+            width: 64px;
+            height: 64px;
+            background: #1DB954;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+        }
+        
+        .signin-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .signin-subtitle {
+            font-size: 15px;
+            color: #a3a3a3;
+            line-height: 1.6;
+        }
+        
+        /* Input */
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #a3a3a3;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .input-field {
+            width: 100%;
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            padding: 18px;
+            font-size: 18px;
+            color: #fff;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .input-field:focus,
+        .input-field.focused {
+            border-color: #1DB954;
+            background: rgba(29, 185, 84, 0.05);
+            outline: none;
+        }
+        
+        .input-field.code {
+            text-align: center;
+            letter-spacing: 16px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        /* CTA Button */
+        .cta-button {
+            width: 100%;
+            background: #1DB954;
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            padding: 20px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .cta-button:hover {
+            background: #1ed760;
+            transform: scale(1.02);
+        }
+        
+        .cta-button.secondary {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.2);
+            color: #a3a3a3;
+            margin-top: 16px;
+        }
+        
+        .cta-button.purple {
+            background: #8b5cf6;
+        }
+        
+        .link-text {
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 20px;
+        }
+        
+        .link-text a {
+            color: #1DB954;
+            text-decoration: none;
+        }
+        
+        /* Connecting Screen */
+        .connecting-content {
+            text-align: center;
+            padding-top: 60px;
+        }
+        
+        /* Track Card Compact */
+        .track-card {
+            background: linear-gradient(135deg, rgba(232, 121, 249, 0.2), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(232, 121, 249, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-top: 40px;
+        }
+        
+        .track-card .cover {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #e879f9, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .track-card .info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .track-card .info p {
+            font-size: 14px;
+            color: #a3a3a3;
+        }
+        
+        /* Listening Screen */
+        .listening-screen {
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f172a 100%) !important;
+        }
+        
+        .listening-header {
+            text-align: center;
+            padding-top: 20px;
+        }
+        
+        /* Summary Screen */
+        .summary-screen {
+            background: linear-gradient(180deg, #0f2027 0%, #203a43 50%, #2c5364 100%) !important;
+            text-align: center;
+        }
+        
+        .summary-content {
+            padding-top: 40px;
+        }
+        
+        .summary-emoji {
+            font-size: 96px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .summary-subtitle {
+            font-size: 18px;
+            color: #a3a3a3;
+            margin-bottom: 40px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 12px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1DB954;
+            margin-bottom: 6px;
+        }
+        
+        .stat-value.purple {
+            color: #a78bfa;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #a3a3a3;
+            line-height: 1.4;
+        }
+        
+        /* Gift Card */
+        .gift-card {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 24px;
+            padding: 24px;
+            text-align: left;
+        }
+        
+        .gift-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #a78bfa;
+        }
+        
+        .gift-text {
+            font-size: 14px;
+            color: #a3a3a3;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Nav Dots */
+        .nav-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .nav-dot.active {
+            background: #8b5cf6;
+            width: 32px;
+            border-radius: 5px;
+        }
+        
+        /* Step indicator */
+        .step-indicator {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        
+        .step-indicator span {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .step-indicator strong {
+            color: #a78bfa;
+        }
+        
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 28px 0;
+        }
+        
+        /* Preview Warning */
+        .preview-warning {
+            background: rgba(249, 115, 22, 0.15);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .preview-warning p {
+            font-size: 14px;
+            color: #f97316;
+            font-weight: 600;
+        }
+        
+        .preview-warning small {
+            font-size: 12px;
+            color: #a3a3a3;
+            display: block;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-header">
+        <div class="prototype-badge">👩 Receiver Flow</div>
+        <h1 class="prototype-title">Мама (отримувач)</h1>
+        <p class="prototype-subtitle">Listen First → Sign In → Premium Gift</p>
+    </div>
+    
+    <div class="phone-container">
+        <div class="phone">
+            <div class="phone-inner">
+                <div class="dynamic-island"></div>
+                <div class="screens">
+                    <!-- Screen 1: Invitation -->
+                    <div class="screen invitation-screen active" id="screen1">
+                        <div class="status-bar">
+                            <span>10:15</span>
+                            <div class="status-icons">
+                                <span>📶</span>
+                                <span>🔋</span>
+                            </div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="invitation-header">
+                                <div class="from-badge">
+                                    <div class="avatar">О</div>
+                                    <span><strong>Олена</strong> запрошує</span>
+                                </div>
+                                <h2 class="invitation-title">🎵 Послухаємо!</h2>
+                                <p class="invitation-subtitle">Олена хоче послухати музику разом</p>
+                            </div>
+                            
+                            <div class="invitation-track">
+                                <div class="live-badge">LIVE</div>
+                                <div class="track-cover" style="width: 120px; height: 120px; font-size: 44px;">🎵</div>
+                                <h4>Пісня про маму</h4>
+                                <p class="artist">Квітка Цісик</p>
+                            </div>
+                            
+                            <div class="choice-buttons">
+                                <button class="choice-btn primary" onclick="goToScreen(2)">
+                                    <span class="icon">🎧</span>
+                                    <div class="text">
+                                        Приєднатися зараз
+                                        <span>Слухати разом з Оленою</span>
+                                    </div>
+                                </button>
+                                <button class="choice-btn secondary">
+                                    <span class="icon">🕐</span>
+                                    <div class="text">
+                                        Послухаю пізніше
+                                        <span>Отримаю нагадування</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Screen 2: Preview Listening (NO SIGN IN NEEDED) -->
+                    <div class="screen preview-screen" id="screen2">
+                        <div class="status-bar">
+                            <span>10:15</span>
+                            <div class="status-icons">
+                                <span>📶</span>
+                                <span>🔋</span>
+                            </div>
+                        </div>
+                        <div class="screen-content" style="text-align: center; padding-top: 20px;">
+                            <div class="preview-header">
+                                <div class="preview-badge">
+                                    🎵 Безкоштовний preview
+                                </div>
+                                
+                                <div class="together-avatars">
+                                    <div class="avatar-circle green">О</div>
+                                    <div class="avatar-circle purple">М</div>
+                                </div>
+                                
+                                <div class="track-cover large">🎵</div>
+                                
+                                <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Пісня про маму</h3>
+                                <p style="font-size: 16px; color: #a3a3a3; margin-bottom: 16px;">Квітка Цісик</p>
+                                
+                                <div class="together-info" style="margin-top: 0;">
+                                    <div class="avatars">
+                                        <div class="avatar-circle green">О</div>
+                                        <div class="avatar-circle purple">М</div>
+                                    </div>
+                                    <div class="text">
+                                        <p>Слухаємо разом!</p>
+                                        <p>з Оленою</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="preview-timer">
+                                    ⏱️ Preview: ще 45 сек
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="player-section">
+                            <div class="progress-track">
+                                <div class="progress-fill warning" style="width: 50%;"></div>
+                            </div>
+                            <div class="time-display">
+                                <span>1:30</span>
+                                <span>3:00</span>
+                            </div>
+                            <div class="controls">
+                                <span class="control-btn">⏮</span>
+                                <div class="play-pause" onclick="goToScreen(3)">⏸</div>
+                                <span class="control-btn">⏭</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Screen 3: Sign In Prompt (after preview ends) -->
+                    <div class="screen signin-prompt-screen" id="screen3">
+                        <div class="status-bar">
+                            <span>10:17</span>
+                            <div class="status-icons">
+                                <span>📶</span>
+                                <span>🔋</span>
+                            </div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="signin-prompt-content">
+                                <div class="signin-emoji">🎵</div>
+                                <h2 class="signin-prompt-title">Сподобалось?</h2>
+                                <p class="signin-prompt-text">
+                                    Увійдіть, щоб продовжити<br>
+                                    слухати разом з Оленою!
+                                </p>
+                                
+                                <div class="benefit-list">
+                                    <div class="benefit-item">
+                                        <span class="benefit-icon">🎧</span>
+                                        <span class="benefit-text">Слухати всю пісню разом</span>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <span class="benefit-icon">🎁</span>
+                                        <span class="benefit-text">1 місяць Premium в подарунок</span>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <span class="benefit-icon">💜</span>
+                                        <span class="benefit-text">Зберігати улюблені пісні</span>
+                                    </div>
+                                </div>
+                                
+                                <button class="cta-button" onclick="goToScreen(4)">
+                                    Увійти та продовжити 🎵
+                                </button>
+                                
+                                <button class="cta-button secondary">
+                                    Не зараз
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Screen 4: Sign In Phone -->
+                    <div class="screen signin-screen" id="screen4">
+                        <div class="status-bar">
+                            <span>10:17</span>
+                            <div class="status-icons">
+                                <span>📶</span>
+                                <span>🔋</span>
+                            </div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="signin-content">
+                                <div class="progress-bar">
+                                    <div class="progress-step active"></div>
+                                    <div class="progress-step"></div>
+                                </div>
+                                
+                                <div class="signin-header">
+                                    <div class="signin-logo">🎵</div>
+                                    <h2 class="signin-title">Вхід за номером</h2>
+                                    <p class="signin-subtitle">
+                                        Введіть номер телефону.<br>
+                                        Ми надішлемо SMS з кодом.
+                                    </p>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label class="input-label">Номер телефону</label>
+                                    <input type="text" class="input-field focused" value="+380 67 123 45 67" readonly>
+                                </div>
+                                
+                                <button class="cta-button" onclick="goToScreen(5)">
+                                    Отримати код
+                                </button>
+                                
+                                <p class="link-text">
+                                    Або увійти через <a href="#">email</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Screen 5: SMS Code -->
+                    <div class="screen signin-screen" id="screen5">
+                        <div class="status-bar">
+                            <span>10:18</span>
+                            <div class="status-icons">
+                                <span>📶</span>
+                                <span>🔋</span>
+                            </div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="signin-content">
+                                <div class="progress-bar">
+                                    <div class="progress-step done"></div>
+                                    <div class="progress-step active"></div>
+                                </div>
+                                
+                                <div class="signin-header">
+                                    <div style="font-size: 72px; margin-bottom: 24px;">💬</div>
+                                    <h2 class="signin-title">Введіть код</h2>
+                                    <p class="signin-subtitle">
+                                        Ми надіслали SMS на<br>
+                                        +380 67 *** ** 67
+                                    </p>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <input type="text" class="input-field code focused" value="4 5 2 8" readonly>
+                                </div>
+                                
+                                <button class="cta-button" onclick="goToScreen(6)">
+                                    Підтвердити
+                                </button>
+                                
+                                <p class="link-text">
+                                    Не отримали? <a href="#">Надіслати ще раз</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Screen 6: Continue Listening (Full access) -->
+                    <div class="screen listening-screen" id="screen6">
+                        <div class="status-bar">
+                            <span>10:18</span>
+                            <div class="status-icons">
+                                <span>📶</span>
+                                <span>🔋</span>
+                            </div>
+                        </div>
+                        <div class="screen-content" style="text-align: center; padding-top: 20px;">
+                            <div class="listening-header">
+                                <div class="together-badge">
+                                    <div class="pulse-dot"></div>
+                                    Family Jam
+                                </div>
+                                
+                                <div class="track-cover large">🎵</div>
+                                
+                                <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Пісня про маму</h3>
+                                <p style="font-size: 16px; color: #a3a3a3; margin-bottom: 24px;">Квітка Цісик</p>
+                                
+                                <div class="together-info">
+                                    <div class="avatars">
+                                        <div class="avatar-circle green">О</div>
+                                        <div class="avatar-circle purple">М</div>
+                                    </div>
+                                    <div class="text">
+                                        <p>Разом</p>
+                                        <p>з Оленою</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="player-section">
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 55%;"></div>
+                            </div>
+                            <div class="time-display">
+                                <span>1:40</span>
+                                <span>3:00</span>
+                            </div>
+                            <div class="controls">
+                                <span class="control-btn">⏮</span>
+                                <div class="play-pause" onclick="goToScreen(7)">⏸</div>
+                                <span class="control-btn">⏭</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Screen 7: Summary + Premium Gift -->
+                    <div class="screen summary-screen" id="screen7">
+                        <div class="status-bar">
+                            <span>10:30</span>
+                            <div class="status-icons">
+                                <span>📶</span>
+                                <span>🔋</span>
+                            </div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="summary-content">
+                                <div class="summary-emoji">💚</div>
+                                <h2 class="summary-title">Було чудово!</h2>
+                                <p class="summary-subtitle">4 пісні з Оленою</p>
+                                
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-value">12</div>
+                                        <div class="stat-label">хвилин<br>разом</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value">4</div>
+                                        <div class="stat-label">пісень</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value purple">🎁</div>
+                                        <div class="stat-label">Подарунок<br>1 міс Premium</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="gift-card">
+                                    <div class="gift-title">
+                                        🎁 Подарунок від Олени
+                                    </div>
+                                    <p class="gift-text">
+                                        1 місяць Spotify Premium безкоштовно — без реклами та обмежень!
+                                    </p>
+                                    <button class="cta-button purple">
+                                        Активувати Premium 🎉
+                                    </button>
+                                </div>
+                                
+                                <button class="cta-button secondary">
+                                    Продовжити безкоштовно
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step-indicator">
+            <span>Крок <strong id="currentStep">1</strong> з 7</span>
+        </div>
+    </div>
+    
+    <div class="nav-dots">
+        <div class="nav-dot active" onclick="goToScreen(1)"></div>
+        <div class="nav-dot" onclick="goToScreen(2)"></div>
+        <div class="nav-dot" onclick="goToScreen(3)"></div>
+        <div class="nav-dot" onclick="goToScreen(4)"></div>
+        <div class="nav-dot" onclick="goToScreen(5)"></div>
+        <div class="nav-dot" onclick="goToScreen(6)"></div>
+        <div class="nav-dot" onclick="goToScreen(7)"></div>
+    </div>
+    
+    <script>
+        let currentScreen = 1;
+        const totalScreens = 7;
+        
+        function goToScreen(num) {
+            if (num < 1 || num > totalScreens) return;
+            
+            const prevScreen = document.getElementById(`screen${currentScreen}`);
+            const nextScreen = document.getElementById(`screen${num}`);
+            
+            prevScreen.classList.remove('active');
+            
+            setTimeout(() => {
+                nextScreen.classList.add('active');
+            }, 50);
+            
+            // Update dots
+            document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === num - 1);
+            });
+            
+            // Update step indicator
+            document.getElementById('currentStep').textContent = num;
+            
+            currentScreen = num;
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                goToScreen(currentScreen + 1);
+            } else if (e.key === 'ArrowLeft') {
+                goToScreen(currentScreen - 1);
+            }
+        });
+    </script>
+</body>
+</html>
